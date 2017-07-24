@@ -11,7 +11,8 @@ class LayerField(SlotsPickleable):
     # it's much more memory-efficient (cuts about a third of the memory).
     __slots__ = ['name', 'showname', 'raw_value', 'show', 'hide', 'pos', 'size', 'unmaskedvalue']
 
-    def __init__(self, name=None, showname=None, value=None, show=None, hide=None, pos=None, size=None, unmaskedvalue=None):
+    def __init__(self, name=None, showname=None, value=None, show=None, hide=None, pos=None, size=None,
+                 unmaskedvalue=None):
         self.name = name
         self.showname = showname
         self.raw_value = value
@@ -85,10 +86,10 @@ class LayerFieldsContainer(str, Pickleable):
     """
 
     def __new__(cls, main_field, *args, **kwargs):
-        value = main_field.get_default_value()
-        if value is None:
-            value = ''
-        obj = str.__new__(cls, value, *args, **kwargs)
+        if hasattr(main_field, 'get_default_value'):
+            obj = str.__new__(cls, main_field.get_default_value(), *args, **kwargs)
+        else:
+            obj = str.__new__(cls, main_field, *args, **kwargs)
         obj.fields = [main_field]
         return obj
 
